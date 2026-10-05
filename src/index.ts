@@ -6,7 +6,7 @@ export interface DeliveryCue {
   /** A short voice direction, such as "warm" or "quietly curious". */
   tone?: string;
   /** An optional vocal reaction before the text. */
-  reaction?: "sighs" | "laughs" | "exhales";
+  reaction?: string;
 }
 
 export interface SpeechSegment {
@@ -21,7 +21,6 @@ export interface RenderedSpeech {
   speechText: string;
 }
 
-const REACTIONS = new Set(["sighs", "laughs", "exhales"]);
 const TONE = /^[\p{L}\p{M}]+(?:[ ,'-]+[\p{L}\p{M}]+)*$/u;
 
 /**
@@ -36,20 +35,19 @@ export function sanitizeCue(input: unknown): DeliveryCue {
   try {
     const raw = input as Record<string, unknown>;
     const result: DeliveryCue = {};
-    const tone = raw.tone;
-    if (typeof tone === "string" && !/[\r\n\t]/u.test(tone)) {
-      const normalized = tone.trim().replace(/ +/gu, " ");
-      if (
-        normalized.length <= 64 &&
-        normalized.split(/[ ,]+/u).length <= 8 &&
-        TONE.test(normalized)
-      ) {
-        result.tone = normalized;
+    for (const field of ["tone", "reaction"] as const) {
+      const value = raw[field];
+      if (field === "reaction" && value === "none") continue;
+      if (typeof value === "string" && !/[\r\n\t]/u.test(value)) {
+        const normalized = value.trim().replace(/ +/gu, " ");
+        if (
+          normalized.length <= 64 &&
+          normalized.split(/[ ,]+/u).length <= 8 &&
+          TONE.test(normalized)
+        ) {
+          result[field] = normalized;
+        }
       }
-    }
-    const reaction = raw.reaction;
-    if (typeof reaction === "string" && REACTIONS.has(reaction)) {
-      result.reaction = reaction as DeliveryCue["reaction"] & string;
     }
     return result;
   } catch {

@@ -3,21 +3,21 @@
     "id": "context-reassurance",
     "name": "A worried customer",
     "text": "",
-    "situation": "A hotel receptionist is helping a traveler who is worried their reservation was lost.",
-    "transcript": "Guest: I have been traveling all night. Please tell me I still have a room.\nReceptionist: May I see your booking number?\nGuest: Here. I am really worried."
+    "situation": "A hotel receptionist is helping an exhausted traveler who thought their reservation was lost. While checking, the receptionist has just found the prepaid reservation under a misspelled surname and confirmed the room is ready. They can now explain the mistake and offer a practical next step.",
+    "transcript": "Guest: I have been traveling all night. Please tell me I still have a room.\nReceptionist: May I see your booking number?\nGuest: Here. I am really worried. Your colleague said nothing was under my name.\nReceptionist: I am checking the confirmation directly.\nGuest: I cannot do another hotel tonight. What is happening?"
   },
   {
     "id": "context-irritation",
     "name": "A repeated interruption",
     "text": "",
-    "situation": "A tired colleague is interrupted for the fourth time about an answer they already sent. They remain polite but their patience is wearing thin.",
-    "transcript": "Colleague: Did you check the number?\nSpeaker: I sent it ten minutes ago.\nColleague: Can you check it again?\nSpeaker: It is in the email.\nColleague: Just check one more time."
+    "situation": "A tired colleague is interrupted for the fourth time about an answer they already sent. Their patience is wearing thin, but the other colleague has now admitted they fear giving a client the wrong number. The speaker needs to set a boundary, point to the exact answer in the email, and then help them handle their worry.",
+    "transcript": "Colleague: Did you check the number?\nSpeaker: I sent it ten minutes ago.\nColleague: Can you check it again?\nSpeaker: It is in the email, second paragraph, marked final.\nColleague: Just check one more time. I know I keep asking. I am scared I will give the client the wrong figure and get blamed again."
   },
   {
     "id": "context-uncertainty",
     "name": "A new employee is unsure",
     "text": "",
-    "situation": "A new employee has been asked an unfamiliar technical question. They want to help but are unsure where to find the answer.",
+    "situation": "A new employee has been asked an unfamiliar technical question. They were unsure, but have now found the manufacturer compatibility sheet. It confirms this adapter supports the customer's two-display configuration at sixty hertz, but not at one hundred twenty hertz. They should acknowledge their earlier uncertainty, explain the verified limit, and help the customer decide.",
     "transcript": "Customer: Does the adapter support that configuration?\nEmployee: I have not used that setup yet.\nCustomer: Could you confirm it before I buy it?"
   }
 ]

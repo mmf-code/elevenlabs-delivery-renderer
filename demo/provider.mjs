@@ -1,4 +1,5 @@
-import { renderSpeech } from "../dist/index.js";
+import { renderSegments, renderSpeech } from "../dist/index.js";
+import { normalizeSpeechSegments } from "./speech-pipeline.mjs";
 
 export const DEFAULT_VOICE = "JBFqnCBsd6RMkjVDRZzb";
 
@@ -18,7 +19,9 @@ export function buildRequest(input) {
   if (typeof previousText !== "string" || previousText.length > 100) {
     throw new Error("Previous spoken text must be at most 100 characters.");
   }
-  const rendered = renderSpeech(input.text, input.cue);
+  const rendered = input.segments === undefined ? renderSpeech(input.text, input.cue) : renderSegments(normalizeSpeechSegments(input.segments));
+  if (rendered.sourceText !== input.text) throw new Error("Speech segments do not match the spoken text.");
+  if (rendered.speechText.length > 2000) throw new Error("Tagged speech must be at most 2,000 characters.");
   const body = { inputs: [{ text: rendered.speechText, voice_id: voiceId }], model_id: model };
   if (previousText) body.previous_text = previousText;
   return { rendered, body };

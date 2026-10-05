@@ -45,7 +45,29 @@ test("invalid text and delivery are rejected before rendering", async () => {
   for (const output of [
     { text:"[angry] Hello",tone:"warm",reaction:"none" },
     { text:"Hello",tone:"warm] [shouts",reaction:"none" },
-    { text:"Hello",tone:"warm",reaction:"explosion" },
+    { text:"Hello",tone:"warm",reaction:"bad] [tag" },
     { text:"",tone:"warm",reaction:"none" },
   ]) await assert.rejects(prepareSpeech(input,{ generate:async () => output }));
+});
+
+test("one generation places open vocabulary directions inside the reply without changing words", async () => {
+  let calls = 0;
+  const segments = [
+    { text:"I know this is frustrating. ",tone:"softly acknowledging the worry",reaction:"none" },
+    { text:"I found your booking, ",tone:"relieved",reaction:"exhales" },
+    { text:"and your room is ready.",tone:"quietly confident",reaction:"none" },
+  ];
+  const text = segments.map((s) => s.text).join("");
+  const result = await prepareSpeech({ ...input,text },{ generate:async () => { calls++; return { segments }; } });
+  assert.equal(calls,1);
+  assert.equal(result.speech.sourceText,text);
+  assert.equal(result.speech.speechText,"[softly acknowledging the worry] I know this is frustrating. [relieved] [exhales] I found your booking, [quietly confident] and your room is ready.");
+  assert.equal(result.segments.length,3);
+});
+
+test("invalid boundaries, extra tags, and overlong rendered speech are rejected", async () => {
+  for (const segments of [[], [{ text:"Hi [shouts]",tone:"warm" }], Array.from({length:13},() => ({text:"Hi"})), [{text:"a".repeat(2000),tone:"warm"}], [{text:"con",tone:"warm"},{text:"versation",tone:"angry"}]]) {
+    await assert.rejects(prepareSpeech(input,{ generate:async () => ({segments}) }));
+  }
+  await assert.rejects(prepareSpeech({ ...input,text:"Hello, world." },{ generate:async () => ({segments:[{text:"Hello,"},{text:"world."}]}) }),/changed/);
 });
