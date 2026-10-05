@@ -33,6 +33,41 @@ or choose an emotion from a menu.
 
 **[Try the examples →](https://mmf-code.github.io/elevenlabs-delivery-renderer/)**
 
+## Why not just use ElevenLabs Enhance?
+
+ElevenLabs Enhance is useful when the words are already decided. It takes existing text and uses an LLM to add contextually appropriate audio tags while preserving the dialogue.
+
+This project sits one step earlier.
+
+The same model that decides **what to say** can also decide **how to say it**, using the situation and preceding conversation as evidence. It returns spoken segments and delivery together. The renderer only turns that structured decision into ElevenLabs audio tags.
+
+```text
+Enhance:
+finished text
+    ↓
+add delivery tags
+    ↓
+speech
+
+This approach:
+situation + conversation
+    ↓
+reply + delivery + delivery boundaries
+    ↓
+speech
+```
+
+That difference matters in conversational systems:
+
+- **The same words can need different delivery.** "Okay, I understand" can be patient, guarded, irritated, or relieved depending on the turns that came before it.
+- **Delivery can change inside one reply.** The model chooses the boundaries instead of applying one tone to the whole utterance.
+- **No separate emotion-analysis pass is required.** If the reply model already has the conversation, it can produce words and delivery in one generation.
+- **The application owns the context.** Persona state, relationship state, or other runtime signals can be part of the model input without changing the renderer.
+
+This is not a claim that the renderer produces better speech than ElevenLabs Enhance. ElevenLabs still performs the synthesis, and audio tags are not guaranteed to produce a distinct or correct effect for every voice.
+
+The advantage is simpler: **delivery stays part of the next-turn decision instead of becoming a styling pass after the reply already exists.**
+
 ## See it happen
 
 The demo shows the generated reply, the speech transcript, and audio.
