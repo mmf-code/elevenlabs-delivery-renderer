@@ -3,9 +3,9 @@
 These MP3s were generated with ElevenLabs from synthetic texts. The original
 manual-cue examples are in `manifest.json` and `comparisons-manifest.json`.
 The context-driven examples are in `context-manifest.json`: each records the
-full synthetic context, transcript, metadata, public inference prompt, actual
-Gemini response, and resulting ElevenLabs request. Cues in those examples
-were inferred by a real model call, not supplied as preset tags.
+full synthetic context, transcript, public instruction, generated reply and
+delivery, and resulting ElevenLabs request. Text and delivery in those examples
+were generated together by one real model call, not supplied as presets.
 The public example voice ID is `JBFqnCBsd6RMkjVDRZzb`;
 no custom or cloned voice assets are distributed.
 

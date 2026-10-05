@@ -1,23 +1,19 @@
-# Context-driven delivery boundary
+# Conversation-driven delivery
 
-The demo now demonstrates context → model-selected delivery → deterministic
-renderer → ElevenLabs speech. A newly authored public instruction and a Gemini
-adapter let users change arbitrary situations, transcripts, and JSON metadata.
-There is no preset situation-to-tone mapping or scripted inference fallback.
+The user supplies a situation and preceding conversation. One model generation
+returns the reply and vocal delivery together. The renderer creates the tagged
+speech transcript. No user-authored metadata or additional emotion-analysis
+call is required. An optional fixed line is preserved exactly.
 
-The library remains a generic renderer and public prompt builder. The network
-adapter is a separate demo module. Source words are never rewritten.
+The main demo shows the reply, tagged transcript, and audio. Model instructions,
+delivery metadata, and provider requests live in collapsed technical details.
+Fresh generation runs locally; the hosted page labels its recorded examples.
 
-The local playground supports fresh inference and optional debounced updates.
-The hosted static explorer updates prompts immediately and shows recorded
-results only for exact matching inputs, with explicit provenance. It runs no
-inference backend and stores no keys. Editing invalidates cues and playback;
-late results are rejected.
+The pipeline accepts any generate(request) callback. The current demo connection
+is isolated in model.mjs and an optional adapter. Three synthetic examples record
+actual joint text/delivery generations and speech synthesis. Tests use mocks
+and prove one model call per reply, validation, and stale-result rejection.
 
-Three synthetic examples record actual model calls followed by ElevenLabs
-generation, with exact public prompts and provider metadata in the manifest.
-Deterministic tests use mocks and do not prove acoustic accuracy or latency.
-
-Excluded: proprietary prompts, simulation code, character state, measurement,
-scoring, contextual heuristics, automatic transition matching, custom voices,
-customer conversations, production telemetry, and private repository history.
+This package includes no proprietary simulation prompts, character policies,
+state engine, scoring, automatic transition matching, custom voices, customer
+conversations, production telemetry, or private repository history.
