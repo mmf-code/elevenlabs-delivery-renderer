@@ -1,8 +1,12 @@
 # Generated audio examples
 
-These MP3s were generated with ElevenLabs from the synthetic texts in
-`../situations.json`. The exact requests and timestamps are recorded in
-`manifest.json`. The public example voice ID is `JBFqnCBsd6RMkjVDRZzb`;
+These MP3s were generated with ElevenLabs from synthetic texts. The original
+manual-cue examples are in `manifest.json` and `comparisons-manifest.json`.
+The context-driven examples are in `context-manifest.json`: each records the
+full synthetic context, transcript, metadata, public inference prompt, actual
+Gemini response, and resulting ElevenLabs request. Cues in those examples
+were inferred by a real model call, not supplied as preset tags.
+The public example voice ID is `JBFqnCBsd6RMkjVDRZzb`;
 no custom or cloned voice assets are distributed.
 
 Audio generated with [ElevenLabs](https://elevenlabs.io).

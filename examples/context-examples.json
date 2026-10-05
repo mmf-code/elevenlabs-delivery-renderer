@@ -1,0 +1,26 @@
+[
+  {
+    "id": "context-reassurance",
+    "name": "A worried customer",
+    "text": "I understand. Let me check that for you.",
+    "situation": "A hotel receptionist is helping a traveler who is worried their reservation was lost.",
+    "transcript": "Guest: I have been traveling all night. Please tell me I still have a room.\nReceptionist: May I see your booking number?\nGuest: Here. I am really worried.",
+    "metadata": { "speaker": "hotel receptionist", "goal": "reassure the guest while checking facts", "relationship": "professional", "urgency": "low" }
+  },
+  {
+    "id": "context-irritation",
+    "name": "A repeated interruption",
+    "text": "I understand. Let me check that for you.",
+    "situation": "A tired colleague is interrupted for the fourth time about an answer they already sent. They remain polite but their patience is wearing thin.",
+    "transcript": "Colleague: Did you check the number?\nSpeaker: I sent it ten minutes ago.\nColleague: Can you check it again?\nSpeaker: It is in the email.\nColleague: Just check one more time.",
+    "metadata": { "speaker": "tired colleague", "goal": "stay civil while showing restrained irritation", "relationship": "peers", "urgency": "low" }
+  },
+  {
+    "id": "context-uncertainty",
+    "name": "A new employee is unsure",
+    "text": "I understand. Let me check that for you.",
+    "situation": "A new employee has been asked an unfamiliar technical question. They want to help but are unsure where to find the answer.",
+    "transcript": "Customer: Does the adapter support that configuration?\nEmployee: I have not used that setup yet.\nCustomer: Could you confirm it before I buy it?",
+    "metadata": { "speaker": "new employee", "goal": "acknowledge uncertainty and offer to verify", "relationship": "professional", "urgency": "medium" }
+  }
+]

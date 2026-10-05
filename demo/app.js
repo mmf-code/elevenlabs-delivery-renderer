@@ -1,55 +1,126 @@
-import { renderSpeech } from "/renderer.js";
+import { renderSpeech, buildContextPrompt } from "./renderer.js";
+import { createRevisionGate } from "./revision.mjs";
 
 const $ = (id) => document.getElementById(id);
-const situations = await fetch("/situations.json").then((res) => res.json());
+const hosted = document.documentElement.dataset.backend === "static";
+const examples = await fetch("./context-examples.json").then((res) => res.json());
+const recordings = await fetch("./context-manifest.json").then((res) => res.ok ? res.json() : []).catch(() => []);
+const config = hosted ? { contextConfigured:false, speechConfigured:false } : await fetch("./api/config").then((res) => res.json());
+const gate = createRevisionGate();
+let running = false;
+let timer;
 let audioUrl;
+let speechRunning = false;
+
+$("mode").textContent = hosted
+  ? "Hosted prompt explorer: inputs update the real public prompt immediately. Recorded results are labeled. Run npm run demo locally with server-side Gemini and ElevenLabs keys for fresh inference and speech."
+  : `Local live pipeline. Context model: ${config.contextModel}. Inference ${config.contextConfigured ? "ready" : "needs GEMINI_API_KEY"}; speech ${config.speechConfigured ? "ready" : "needs ELEVENLABS_API_KEY"}.`;
+$("auto").disabled = !config.contextConfigured;
 function input() {
-  return { text: $("text").value, cue: { tone: $("tone").value, reaction: $("reaction").value }, previousText: $("previous").value, voiceId: $("voice").value, model: $("model").value };
+  return { text:$("text").value, situation:$("context").value, transcript:$("transcript").value, metadata:JSON.parse($("metadata").value) };
+}
+function currentRecording() {
+  try {
+    const prompt = buildContextPrompt(input());
+    return recordings.find((record) => JSON.stringify(record.resolution.prompt.input) === JSON.stringify(prompt.input));
+  } catch { return undefined; }
+}
+function controls() {
+  $("infer").disabled = running || !config.contextConfigured;
+  $("generate").disabled = !gate.value() || speechRunning || !config.speechConfigured;
+  $("recorded").disabled = !currentRecording();
+}
+function hideAudio() {
+  $("player").pause(); $("player").removeAttribute("src"); $("player").hidden = true;
+  $("download").hidden = true;
+  if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = undefined; }
 }
 function preview() {
-  const value = input();
-  const rendered = renderSpeech(value.text, value.cue);
-  $("source").textContent = rendered.sourceText;
-  const body = { inputs: [{ text: rendered.speechText, voice_id: value.voiceId }], model_id: value.model };
-  if (value.previousText) body.previous_text = value.previousText;
-  $("payload").textContent = JSON.stringify(body, null, 2);
-}
-function selectSituation() {
-  const selected = situations.find((item) => item.id === $("situation").value);
-  $("context").value = selected.context;
-  $("text").value = selected.text;
-  $("tone").value = selected.cue.tone;
-  $("reaction").value = selected.cue.reaction ?? "";
-  $("previous").value = "";
-  preview();
-}
-for (const situation of situations) {
-  const option = document.createElement("option");
-  option.value = situation.id; option.textContent = situation.name;
-  $("situation").append(option);
-  const card = document.createElement("div"); card.className = "sample";
-  const title = document.createElement("strong"); title.textContent = situation.name;
-  const text = document.createElement("small"); text.textContent = situation.text;
-  const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none"; audio.src = `/audio/${situation.id}.mp3`;
-  card.append(title, text, audio); $("samples").append(card);
-}
-$("situation").addEventListener("change", selectSituation);
-$("preview").addEventListener("click", preview);
-for (const id of ["text", "tone", "reaction", "previous", "voice", "model"]) $(id).addEventListener("input", preview);
-$("generate").addEventListener("click", async () => {
-  preview(); $("generate").disabled = true;
-  $("status").textContent = "Generating speech…";
+  $("source").textContent = $("text").value;
   try {
-    const response = await fetch("/api/speech", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input()) });
-    if (!response.ok) {
-      const data = await response.json(); throw new Error(data.error ?? "Generation failed.");
+    const prompt = buildContextPrompt(input());
+    $("prompt").textContent = prompt.instruction + "\n\nUSER INPUT\n" + prompt.userText;
+  } catch (error) { $("prompt").textContent = error.message; }
+  const result = gate.value();
+  $("resolution").textContent = result ? JSON.stringify(result, null, 2) : "No current result. Infer delivery or load an explicitly recorded example.";
+  if (result) {
+    const text = renderSpeech($("text").value, result.cue).speechText;
+    const body = { inputs:[{ text, voice_id:$("voice").value }], model_id:$("model").value };
+    if ($("previous").value) body.previous_text = $("previous").value;
+    $("payload").textContent = JSON.stringify(body, null, 2);
+  } else { $("payload").textContent = "Waiting for current delivery metadata. No old cue is reused."; }
+  controls();
+}
+function edited() {
+  gate.invalidate(); clearTimeout(timer); hideAudio(); preview();
+  $("status").textContent = "Input changed. Prompt updated; previous delivery is invalid.";
+  if ($("auto").checked && !running) timer = setTimeout(infer, 1200);
+}
+async function infer() {
+  if (running || !config.contextConfigured) return;
+  let value;
+  try { value = input(); buildContextPrompt(value); } catch (error) { $("status").textContent = error.message; return; }
+  const ticket = gate.ticket();
+  running = true; controls(); $("status").textContent = "Inferring delivery from the current context…";
+  try {
+    const response = await fetch("./api/context", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(value) });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error ?? "Inference failed.");
+    if (gate.accept(ticket, { provenance:"live inference", ...result })) {
+      hideAudio(); preview(); $("status").textContent = "Fresh model-selected delivery ready. Generate audio to hear it.";
     }
-    if (audioUrl) URL.revokeObjectURL(audioUrl);
-    audioUrl = URL.createObjectURL(await response.blob());
-    $("player").src = audioUrl; $("player").hidden = false;
-    $("download").href = audioUrl; $("download").hidden = false;
-    $("status").textContent = "Audio ready. Press play to listen.";
-  } catch (error) { $("status").textContent = error.message; }
-  finally { $("generate").disabled = false; }
+  } catch (error) { if (ticket === gate.ticket()) $("status").textContent = error.message; }
+  finally {
+    running = false; controls();
+    if (ticket !== gate.ticket() && $("auto").checked) { clearTimeout(timer); timer = setTimeout(infer, 1200); }
+  }
+}
+function selectExample() {
+  const example = examples.find((item) => item.id === $("situation").value);
+  $("context").value = example.situation;
+  $("transcript").value = example.transcript;
+  $("metadata").value = JSON.stringify(example.metadata, null, 2);
+  $("text").value = example.text; $("previous").value = "";
+  edited();
+}
+for (const example of examples) {
+  const option = document.createElement("option"); option.value = example.id; option.textContent = example.name; $("situation").append(option);
+}
+for (const record of recordings) {
+  const card = document.createElement("div"); card.className = "sample";
+  const title = document.createElement("strong"); title.textContent = record.input.name;
+  const context = document.createElement("small"); context.textContent = record.input.situation;
+  const metadata = document.createElement("pre"); metadata.textContent = JSON.stringify({ cue:record.resolution.cue, explanation:record.resolution.explanation }, null, 2);
+  const audio = document.createElement("audio"); audio.controls = true; audio.preload = "none"; audio.src = "./audio/" + record.file;
+  card.append(title, context, metadata, audio); $("samples").append(card);
+}
+$("situation").addEventListener("change", selectExample);
+for (const id of ["context","transcript","metadata","text"]) $(id).addEventListener("input", edited);
+for (const id of ["previous","voice","model"]) $(id).addEventListener("input", () => { hideAudio(); preview(); });
+$("auto").addEventListener("change", () => { clearTimeout(timer); if ($("auto").checked) timer = setTimeout(infer, 1200); });
+$("infer").addEventListener("click", () => { clearTimeout(timer); infer(); });
+$("recorded").addEventListener("click", () => {
+  const record = currentRecording(); if (!record) return;
+  gate.invalidate(); clearTimeout(timer);
+  gate.accept(gate.ticket(), { provenance:"recorded model output — not fresh inference", ...record.resolution });
+  hideAudio(); preview(); $("status").textContent = "Recorded result loaded for the exact matching inputs.";
 });
-selectSituation();
+$("generate").addEventListener("click", async () => {
+  const result = gate.value(); if (!result || speechRunning) return;
+  const value = { text:$("text").value, cue:result.cue, voiceId:$("voice").value, model:$("model").value, previousText:$("previous").value };
+  const identity = JSON.stringify(value);
+  const ticket = gate.ticket();
+  speechRunning = true; controls(); $("status").textContent = "Generating speech from the current resolved cue…";
+  try {
+    const response = await fetch("./api/speech", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(value) });
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error ?? "Speech generation failed."); }
+    const blob = await response.blob();
+    const latest = gate.value();
+    const now = latest ? JSON.stringify({ text:$("text").value, cue:latest.cue, voiceId:$("voice").value, model:$("model").value, previousText:$("previous").value }) : "";
+    if (ticket !== gate.ticket() || now !== identity) return;
+    hideAudio(); audioUrl = URL.createObjectURL(blob); $("player").src = audioUrl; $("player").hidden = false;
+    $("download").href = audioUrl; $("download").hidden = false; $("status").textContent = "Current audio ready. Press play.";
+  } catch (error) { if (ticket === gate.ticket()) $("status").textContent = error.message; }
+  finally { speechRunning = false; controls(); }
+});
+selectExample();

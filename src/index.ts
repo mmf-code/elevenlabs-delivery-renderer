@@ -1,3 +1,6 @@
+export { buildContextPrompt, normalizeContextInput, CONTEXT_INSTRUCTION } from "./context.js";
+export type { ContextInput } from "./context.js";
+
 /** Explicit delivery instructions supplied by the calling application. */
 export interface DeliveryCue {
   /** A short voice direction, such as "warm" or "quietly curious". */

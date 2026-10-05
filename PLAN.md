@@ -1,39 +1,23 @@
-# Standalone renderer plan
+# Context-driven delivery boundary
 
-## Release boundary
+The demo now demonstrates context → model-selected delivery → deterministic
+renderer → ElevenLabs speech. A newly authored public instruction and a Gemini
+adapter let users change arbitrary situations, transcripts, and JSON metadata.
+There is no preset situation-to-tone mapping or scripted inference fallback.
 
-Build a fresh, independently implemented TypeScript package for explicit
-ElevenLabs delivery cues. Publish only the generic rendering mechanism.
+The library remains a generic renderer and public prompt builder. The network
+adapter is a separate demo module. Source words are never rewritten.
 
-Public scope:
-- A short tone and optional vocal reaction supplied by the caller.
-- Whole-text rendering with separate source and speech outputs.
-- Explicit segment boundaries for caller-selected tone changes.
-- A streaming prefix helper with immediate forwarding and no buffering.
-- Syntax validation, synthetic examples, deterministic tests, and documentation.
-- A loopback-only playground with editable public presets and exact request preview.
-- Optional previous spoken text for provider continuity; situation notes stay local.
-- Three actual provider-generated audio files with request provenance.
+The local playground supports fresh inference and optional debounced updates.
+The hosted static explorer updates prompts immediately and shows recorded
+results only for exact matching inputs, with explicit provenance. It runs no
+inference backend and stores no keys. Editing invalidates cues and playback;
+late results are rejected.
 
-Excluded scope:
-- Simulation code, characters, scenarios, assessment, and scoring.
-- Prompts, model calls, contextual inference, and emotion-selection policies.
-- Automatic transition-anchor matching, intensity heuristics, and fallback mappings.
-- Production gateway transport, authentication, telemetry, and configuration.
-- Customer transcripts, recordings, private voice assets, and repository history.
+Three synthetic examples record actual model calls followed by ElevenLabs
+generation, with exact public prompts and provider metadata in the manifest.
+Deterministic tests use mocks and do not prove acoustic accuracy or latency.
 
-## Implementation and release sequence
-
-1. Create a new sibling repository without copying files or history.
-2. Implement the public API with no runtime dependencies.
-3. Prove exact source preservation, tag validation, and chunk-split equivalence.
-4. Write English-only documentation, a local playground, and server-side ElevenLabs examples.
-5. Inspect the complete package payload and staged files for accidental private content.
-6. Commit, create the public GitHub repository, push, and inspect CI.
-
-## Evidence boundary
-
-Tests prove string rendering and package behavior. They do not prove subjective
-audio quality, model acceptance of every tone, latency, or provider availability.
-The three sample files establish actual provider generation only; subjective
-listening evaluation is not claimed. npm publication is outside this release.
+Excluded: proprietary prompts, simulation code, character state, measurement,
+scoring, contextual heuristics, automatic transition matching, custom voices,
+customer conversations, production telemetry, and private repository history.
