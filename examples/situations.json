@@ -1,0 +1,23 @@
+[
+  {
+    "id": "welcome",
+    "name": "Welcoming a visitor",
+    "context": "A visitor has just arrived. Keep the greeting friendly and simple.",
+    "text": "Hello, welcome! I am glad you could make it today.",
+    "cue": { "tone": "warm, friendly" }
+  },
+  {
+    "id": "delay",
+    "name": "Explaining a delivery delay",
+    "context": "An order is late. Acknowledge the inconvenience calmly.",
+    "text": "I am sorry about the delay. Let me check the latest delivery update for you.",
+    "cue": { "tone": "calm, apologetic" }
+  },
+  {
+    "id": "discovery",
+    "name": "Sharing good news",
+    "context": "A missing item has been found. Sound relieved rather than theatrical.",
+    "text": "We found it! Your bag is at the front desk, and you can pick it up now.",
+    "cue": { "tone": "relieved, cheerful", "reaction": "exhales" }
+  }
+]

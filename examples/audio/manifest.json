@@ -1,0 +1,62 @@
+[
+  {
+    "id": "welcome",
+    "file": "welcome.mp3",
+    "context": "A visitor has just arrived. Keep the greeting friendly and simple.",
+    "rendered": {
+      "sourceText": "Hello, welcome! I am glad you could make it today.",
+      "speechText": "[warm, friendly] Hello, welcome! I am glad you could make it today."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[warm, friendly] Hello, welcome! I am glad you could make it today.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:23:41.601Z",
+    "provider": "ElevenLabs"
+  },
+  {
+    "id": "delay",
+    "file": "delay.mp3",
+    "context": "An order is late. Acknowledge the inconvenience calmly.",
+    "rendered": {
+      "sourceText": "I am sorry about the delay. Let me check the latest delivery update for you.",
+      "speechText": "[calm, apologetic] I am sorry about the delay. Let me check the latest delivery update for you."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[calm, apologetic] I am sorry about the delay. Let me check the latest delivery update for you.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:23:43.040Z",
+    "provider": "ElevenLabs"
+  },
+  {
+    "id": "discovery",
+    "file": "discovery.mp3",
+    "context": "A missing item has been found. Sound relieved rather than theatrical.",
+    "rendered": {
+      "sourceText": "We found it! Your bag is at the front desk, and you can pick it up now.",
+      "speechText": "[relieved, cheerful] [exhales] We found it! Your bag is at the front desk, and you can pick it up now."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[relieved, cheerful] [exhales] We found it! Your bag is at the front desk, and you can pick it up now.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:23:44.753Z",
+    "provider": "ElevenLabs"
+  }
+]

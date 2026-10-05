@@ -1,0 +1,21 @@
+{
+  "name": "elevenlabs-delivery-renderer",
+  "version": "0.1.0",
+  "description": "Render explicit delivery cues into ElevenLabs audio tags without changing source text.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "example": "npm run build && node examples/render.mjs",
+    "demo": "npm run build && node demo/server.mjs",
+    "samples": "npm run build && node examples/generate-samples.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": { "typescript": "~5.9.3" },
+  "repository": { "type": "git", "url": "https://github.com/mmf-code/elevenlabs-delivery-renderer.git" },
+  "keywords": ["elevenlabs", "tts", "audio-tags", "voice", "typescript"]
+}
