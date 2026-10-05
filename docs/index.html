@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Same words. Different delivery.</title>
+<style>
+:root { font: 17px/1.6 system-ui,sans-serif; color: #202c32; background: #f6f5ef; color-scheme: light; }
+body { max-width: 980px; margin: auto; padding: 48px 24px; }
+h1 { font-size: clamp(2.3rem,6vw,4.2rem); line-height: 1.08; letter-spacing: -.045em; }
+h2 { margin-top: 44px; } h3 { font-size: 1.05rem; margin-top: 0; }
+a { color: #17644f; } .intro { max-width: 760px; color: #54656c; }
+blockquote { margin: 28px 0; border-left: 3px solid #17644f; padding: 8px 20px; font-size: 1.4rem; }
+.grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+article { padding: 22px; border: 1px solid #d9e1da; background: white; border-radius: 12px; }
+p { margin-top: 0; } pre { font-family: ui-monospace,monospace; font-size: .85em; white-space: pre-wrap; overflow-wrap: anywhere; background: #edf2ee; padding: 12px; border-radius: 6px; }
+audio { width: 100%; } small { color: #54656c; } footer { border-top: 1px solid #d9e1da; margin-top: 40px; padding-top: 20px; }
+@media (max-width: 660px) { .grid { grid-template-columns: 1fr; } body { padding: 28px 16px; } }
+</style>
+</head>
+<body>
+<small>ELEVENLABS DELIVERY RENDERER</small>
+<h1>Same words.<br>Different delivery.</h1>
+<p class="intro">The application chooses a delivery cue. A tiny deterministic renderer turns it into an audio tag. ElevenLabs produces the sound. Listen to the actual results below.</p>
+<p><a href="https://github.com/mmf-code/elevenlabs-delivery-renderer">Code and examples on GitHub →</a></p>
+<h2>One sentence, four directions</h2>
+<blockquote>I understand. Let me check that for you.</blockquote>
+<p class="intro">Every clip uses the same text, public voice, and Eleven v4 model. Only the explicit cue differs. These are single generations; variation between runs is expected.</p>
+<div class="grid">
+<article><h3>1. No cue</h3><p>The model chooses its own delivery.</p><pre>I understand. Let me check that for you.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-neutral.mp3"></audio></article>
+<article><h3>2. Warm and reassuring</h3><p>A customer needs reassurance. The caller selects the direction.</p><pre>[warm, reassuring] I understand. Let me check that for you.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-warm.mp3"></audio></article>
+<article><h3>3. Firm and composed</h3><p>The speaker wants to respond with confidence.</p><pre>[firm, composed] I understand. Let me check that for you.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-firm.mp3"></audio></article>
+<article><h3>4. Hesitant and thoughtful</h3><p>The speaker is thinking before answering.</p><pre>[hesitant, thoughtful] I understand. Let me check that for you.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-hesitant.mp3"></audio></article>
+</div>
+<h2>Three small situations</h2>
+<div class="grid">
+<article><h3>Welcoming a visitor</h3><pre>[warm, friendly] Hello, welcome! I am glad you could make it today.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/welcome.mp3"></audio></article>
+<article><h3>Explaining a delivery delay</h3><pre>[calm, apologetic] I am sorry about the delay. Let me check the latest delivery update for you.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/delay.mp3"></audio></article>
+<article><h3>Sharing good news</h3><pre>[relieved, cheerful] [exhales] We found it! Your bag is at the front desk, and you can pick it up now.</pre><audio controls preload="none" src="https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/discovery.mp3"></audio></article>
+</div>
+<h2>What determines the sound?</h2>
+<p>The words, explicit tags, selected voice, and speech model all affect the result. Optional previous spoken text provides continuity. Situation notes help the caller choose a cue; this renderer does not analyze them or infer an emotion.</p>
+<pre>caller-chosen cue + text → renderer → tagged text → ElevenLabs → audio</pre>
+<p>This page plays recorded files. It asks for no API key and makes no generation requests. To edit text, cues, and voice settings, run the local playground described in the <a href="https://github.com/mmf-code/elevenlabs-delivery-renderer#try-it">README</a>.</p>
+<footer><small>Audio generated with <a href="https://elevenlabs.io">ElevenLabs</a>. Synthetic text, public example voice. These clips illustrate intent, not a quality benchmark. <a href="https://github.com/mmf-code/elevenlabs-delivery-renderer/tree/main/examples/audio">Requests, provenance, and usage notes</a>.</small></footer>
+</body>
+</html>

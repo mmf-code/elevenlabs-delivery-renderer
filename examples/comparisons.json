@@ -1,0 +1,6 @@
+[
+  { "id": "same-neutral", "name": "No delivery cue", "context": "No explicit direction is supplied. The speech model chooses delivery.", "text": "I understand. Let me check that for you.", "cue": {} },
+  { "id": "same-warm", "name": "Reassuring a customer", "context": "A customer needs reassurance. The caller chooses a warm direction.", "text": "I understand. Let me check that for you.", "cue": { "tone": "warm, reassuring" } },
+  { "id": "same-firm", "name": "Responding with confidence", "context": "A clear answer is needed. The caller chooses a firm direction.", "text": "I understand. Let me check that for you.", "cue": { "tone": "firm, composed" } },
+  { "id": "same-hesitant", "name": "Thinking before answering", "context": "The speaker needs a moment to think. The caller chooses a hesitant direction.", "text": "I understand. Let me check that for you.", "cue": { "tone": "hesitant, thoughtful" } }
+]

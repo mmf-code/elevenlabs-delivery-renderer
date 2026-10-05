@@ -1,0 +1,82 @@
+[
+  {
+    "id": "same-neutral",
+    "file": "same-neutral.mp3",
+    "context": "No explicit direction is supplied. The speech model chooses delivery.",
+    "rendered": {
+      "sourceText": "I understand. Let me check that for you.",
+      "speechText": "I understand. Let me check that for you."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "I understand. Let me check that for you.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:40:57.796Z",
+    "provider": "ElevenLabs"
+  },
+  {
+    "id": "same-warm",
+    "file": "same-warm.mp3",
+    "context": "A customer needs reassurance. The caller chooses a warm direction.",
+    "rendered": {
+      "sourceText": "I understand. Let me check that for you.",
+      "speechText": "[warm, reassuring] I understand. Let me check that for you."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[warm, reassuring] I understand. Let me check that for you.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:40:59.048Z",
+    "provider": "ElevenLabs"
+  },
+  {
+    "id": "same-firm",
+    "file": "same-firm.mp3",
+    "context": "A clear answer is needed. The caller chooses a firm direction.",
+    "rendered": {
+      "sourceText": "I understand. Let me check that for you.",
+      "speechText": "[firm, composed] I understand. Let me check that for you."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[firm, composed] I understand. Let me check that for you.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:41:00.073Z",
+    "provider": "ElevenLabs"
+  },
+  {
+    "id": "same-hesitant",
+    "file": "same-hesitant.mp3",
+    "context": "The speaker needs a moment to think. The caller chooses a hesitant direction.",
+    "rendered": {
+      "sourceText": "I understand. Let me check that for you.",
+      "speechText": "[hesitant, thoughtful] I understand. Let me check that for you."
+    },
+    "body": {
+      "inputs": [
+        {
+          "text": "[hesitant, thoughtful] I understand. Let me check that for you.",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb"
+        }
+      ],
+      "model_id": "eleven_v4"
+    },
+    "generatedAt": "2026-10-05T14:41:01.385Z",
+    "provider": "ElevenLabs"
+  }
+]

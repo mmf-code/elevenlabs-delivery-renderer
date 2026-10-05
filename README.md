@@ -1,84 +1,104 @@
 # ElevenLabs Delivery Renderer
 
-A small TypeScript library that turns **explicit delivery cues** into
-ElevenLabs audio tags. Keep the original words for your UI and records; send
-the rendered version to the speech provider.
-
-Zero runtime dependencies. Works in modern browsers, Node.js, and Workers.
-Includes a local playground and real Eleven v4 audio examples.
-
-## Try the playground
-
-```sh
-git clone https://github.com/mmf-code/elevenlabs-delivery-renderer.git
-cd elevenlabs-delivery-renderer
-npm ci
-npm run demo
-```
-
-Open **http://127.0.0.1:4317**. Recorded examples and request previews work
-without credentials. To generate new audio, set `ELEVENLABS_API_KEY` in your
-server environment before starting the demo. Use a secrets manager or your
-shell's secure input facility; do not put the key in frontend code or commit it.
-
-The demo listens on loopback only and is intended for local development.
-It is not a hosted multi-user service. Generation uses your ElevenLabs credits.
-
-### What the context controls do
-
-| Control | Behavior |
-| --- | --- |
-| Example situation | Loads a synthetic text and an editable delivery preset. |
-| Situation notes | Local notes for a human choosing the delivery; never sent to ElevenLabs. |
-| Voice direction | A short, explicit direction rendered as an audio tag. |
-| Vocal reaction | Optional `sighs`, `laughs`, or `exhales` tag. |
-| Previous spoken text | Sent as `previous_text` for continuity, up to 100 characters. |
-| Voice ID and model | Select the voice you are permitted to use and Eleven v4 or v3. |
-
-Editing situation notes does **not** automatically infer emotion or change
-the delivery. Supply the cues yourself, or connect your own application logic.
-There are no inference prompts, LLM calls, or hidden context-to-emotion rules.
-
-## Listen to the examples
-
-| Situation | Explicit direction | Audio |
-| --- | --- | --- |
-| Welcoming a visitor | `warm, friendly` | [Listen](examples/audio/welcome.mp3) |
-| Explaining a delivery delay | `calm, apologetic` | [Listen](examples/audio/delay.mp3) |
-| Sharing good news | `relieved, cheerful` + `exhales` | [Listen](examples/audio/discovery.mp3) |
-
-The playground provides audio players. GitHub links open or download the MP3s.
-[The manifest](examples/audio/manifest.json) records the exact synthetic text,
-rendered input, model, public voice ID, and generation timestamp. These are
-provider-generated examples, not an audio-quality benchmark or an A/B study.
-Audio generated with [ElevenLabs](https://elevenlabs.io).
-
-## Use the library
-
-This repository is not yet published on npm. Build it locally or install it
-from a local checkout:
-
-```sh
-npm run build
-# From your consuming project, after building this checkout:
-npm install /absolute/path/to/elevenlabs-delivery-renderer
-```
+Same words. Different delivery.
 
 ```ts
-import { renderSpeech } from "elevenlabs-delivery-renderer";
-
-const result = renderSpeech("Hello, welcome!", { tone: "warm, friendly" });
-
-result.sourceText; // "Hello, welcome!"
-result.speechText; // "[warm, friendly] Hello, welcome!"
+renderSpeech("I understand.", { tone: "warm, reassuring" });
+// sourceText: "I understand."
+// speechText: "[warm, reassuring] I understand."
 ```
 
-### Change delivery at explicit boundaries
+A small, deterministic TypeScript renderer for caller-selected ElevenLabs
+audio tags. Zero runtime dependencies. No model calls in the library.
+
+**[Listen to all seven examples →](https://mmf-code.github.io/elevenlabs-delivery-renderer/)**
+
+## Hear the idea
+
+The sentence below stays the same. The caller selects a different cue.
+All four clips use the same public voice and Eleven v4 model.
+
+> I understand. Let me check that for you.
+
+| Situation | Cue supplied by the caller | Actual audio |
+| --- | --- | --- |
+| No explicit direction | `{}` | [▶ No cue](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-neutral.mp3) |
+| Reassuring a customer | `{ tone: "warm, reassuring" }` | [▶ Warm](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-warm.mp3) |
+| Responding with confidence | `{ tone: "firm, composed" }` | [▶ Firm](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-firm.mp3) |
+| Thinking before answering | `{ tone: "hesitant, thoughtful" }` | [▶ Hesitant](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/same-hesitant.mp3) |
+
+These are real, single-generation examples with synthetic text. They show
+what the provider produced, not a guaranteed performance or quality ranking.
+The listening page has audio players; the links above open or download MP3s.
+
+## What determines the sound?
+
+```text
+your application                      this library             ElevenLabs
+text + explicit delivery cue ──────→ tagged speech text ──────→ audio
+             │
+             └────────────────────→ original text for UI / storage
+```
+
+The renderer translates a decision already made by the caller. It does not
+read a conversation and decide how a speaker feels.
+
+| Input | Who supplies it? | What it affects |
+| --- | --- | --- |
+| Words | Your application | Spoken content and natural prosody. |
+| Tone and reaction | Your application or a person | Explicit voice directions rendered as tags. |
+| Segment boundaries | Your application | Where a new delivery direction begins. |
+| Voice ID | Your ElevenLabs request | The chosen voice. |
+| Model | Your ElevenLabs request | Synthesis behavior and supported capabilities. |
+| Previous spoken text | Optional provider request field | Continuity with preceding dialogue. |
+| Situation notes | A person using the playground | Local notes to help choose a cue; never sent or analyzed. |
+
+Actual delivery also varies between generations. Tags express intent;
+voice selection and the model still matter.
+
+## Three small situations
+
+### A visitor arrives
+
+```ts
+renderSpeech("Hello, welcome! I am glad you could make it today.", {
+  tone: "warm, friendly",
+});
+// [warm, friendly] Hello, welcome! I am glad you could make it today.
+```
+
+[▶ Hear the greeting](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/welcome.mp3)
+
+### An order is late
+
+```ts
+renderSpeech(
+  "I am sorry about the delay. Let me check the latest delivery update for you.",
+  { tone: "calm, apologetic" },
+);
+// [calm, apologetic] I am sorry about the delay. Let me check...
+```
+
+[▶ Hear the response](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/delay.mp3)
+
+### A missing bag is found
+
+```ts
+renderSpeech(
+  "We found it! Your bag is at the front desk, and you can pick it up now.",
+  { tone: "relieved, cheerful", reaction: "exhales" },
+);
+// [relieved, cheerful] [exhales] We found it! Your bag is at...
+```
+
+[▶ Hear the good news](https://raw.githubusercontent.com/mmf-code/elevenlabs-delivery-renderer/main/examples/audio/discovery.mp3)
+
+## Change tone halfway through
 
 ```ts
 import { renderSegments } from "elevenlabs-delivery-renderer";
 
-const result = renderSegments([
+renderSegments([
   { text: "Let me check. ", cue: { tone: "thoughtful" } },
   { text: "It is ready!", cue: { tone: "cheerful" } },
 ]);
@@ -86,10 +106,9 @@ const result = renderSegments([
 // speechText: "[thoughtful] Let me check. [cheerful] It is ready!"
 ```
 
-You choose the boundaries. Include spaces and punctuation in the text;
-the renderer inserts no separators between segments.
+The caller chooses the boundary and supplies all spaces and punctuation.
 
-### Render chunks
+## Render streamed text
 
 ```ts
 import { createSpeechStream } from "elevenlabs-delivery-renderer";
@@ -100,42 +119,86 @@ stream.push("Hello");   // "[warm] Hello"
 stream.push(", world"); // ", world"
 ```
 
-Create a new instance for each utterance. The cue is captured at creation.
-The helper prefixes only the first nonempty chunk and immediately forwards
-the rest. It opens no socket and performs no network requests. Your transport
-must support incremental text; the included playground uses a complete-text
-HTTP request.
+One instance per utterance. The cue is captured at creation. Only the first
+nonempty chunk gets the prefix. Nothing is buffered and no spaces are added.
+The helper opens no socket; your transport must support incremental text.
 
-## ElevenLabs integration
+## Try it
 
-The included adapter uses the [Text to Dialogue API](https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert).
-For example, the server sends this body:
+```sh
+git clone https://github.com/mmf-code/elevenlabs-delivery-renderer.git
+cd elevenlabs-delivery-renderer
+npm ci
+npm run demo
+```
+
+Open **http://127.0.0.1:4317**. Edit a situation, text, tone, reaction,
+previous spoken text, voice ID, or model. The preview shows the exact request.
+Recorded samples work without credentials.
+
+For new audio, set `ELEVENLABS_API_KEY` in the server environment before
+starting the demo. The key stays on the server. Generation uses your account
+credits. The loopback-only demo is for local development.
+
+The [Text to Dialogue](https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert)
+adapter sends a body like this:
 
 ```json
 {
-  "inputs": [{ "text": "[warm, friendly] Hello, welcome!", "voice_id": "JBFqnCBsd6RMkjVDRZzb" }],
-  "model_id": "eleven_v4"
+  "inputs": [{ "text": "[warm] Hello", "voice_id": "JBFqnCBsd6RMkjVDRZzb" }],
+  "model_id": "eleven_v4",
+  "previous_text": "Come in."
 }
 ```
 
-The key is supplied only in the server's `xi-api-key` header.
-[ElevenLabs documents audio tags](https://elevenlabs.io/docs/eleven-creative/playground/text-to-speech)
-for v4, v4 Turbo, and v3. The renderer produces tag strings; availability,
-supported endpoints, delivery quality, and costs depend on the model and account.
-The demo supports v4 and v3 and never silently falls back to another model.
+`previous_text` is optional preceding dialogue, not an instruction prompt;
+the demo accepts up to 100 characters. The API key goes in the server's
+`xi-api-key` header. The demo supports v4 and v3 without silent fallback.
+See [ElevenLabs audio tags](https://elevenlabs.io/docs/eleven-creative/playground/text-to-speech)
+for provider guidance.
 
-## Validation and limits
+## Use it in another project
 
-- `sanitizeCue(unknown)` omits invalid fields independently and ignores unknown fields.
-- Tones accept letters, combining marks, spaces, commas, hyphens, and apostrophes;
-  maximum 64 UTF-16 code units and eight space/comma-separated words.
-- Brackets, newlines, and other tag syntax are rejected in cue metadata.
-- Source text passes through exactly, including any brackets already present.
-  This is not a speech-text sanitizer; existing tags in source text may affect delivery.
-- Tags are instructions to a generative model. A valid tag does not guarantee an
-  exact performance or prevent a model from producing an unexpected effect.
-- No automatic emotion selection, intensity mapping, anchor matching, word emphasis,
-  prompt templates, or conversation-state management is included.
+The package is not yet on npm. Build this checkout and install it locally:
+
+```sh
+npm run build
+# Run in your consuming project:
+npm install /absolute/path/to/elevenlabs-delivery-renderer
+```
+
+```ts
+import { renderSpeech } from "elevenlabs-delivery-renderer";
+
+const { sourceText, speechText } = renderSpeech("Hello!", { tone: "warm" });
+// display sourceText; send speechText to the provider
+```
+
+## Small API, explicit limits
+
+| Function | Purpose |
+| --- | --- |
+| `renderSpeech(text, cue?)` | Render one complete utterance. |
+| `renderSegments(segments)` | Render caller-defined delivery changes. |
+| `createSpeechStream(cue?)` | Prefix the first nonempty chunk once. |
+| `sanitizeCue(unknown)` | Drop malformed cue fields and ignore unknown metadata. |
+
+Tones allow letters, combining marks, spaces, commas, hyphens, and apostrophes:
+up to 64 UTF-16 code units and eight space/comma-separated words. Reactions
+are `sighs`, `laughs`, or `exhales`. Brackets and newlines in cues are rejected.
+
+```ts
+sanitizeCue({ tone: "warm] [shouts", reaction: "sighs" });
+// { reaction: "sighs" }
+
+renderSpeech("Hello!");
+// { sourceText: "Hello!", speechText: "Hello!" }
+```
+
+Source text passes through exactly, including existing brackets and tags.
+The library does not sanitize speech text or guarantee acoustic output.
+It includes no emotion inference, prompts, intensity policies, automatic
+anchor matching, character state, or voice assets.
 
 ## Development
 
@@ -145,16 +208,19 @@ npm run example
 npm pack --dry-run
 ```
 
-`npm run samples` regenerates the three recorded examples using the server's
-`ELEVENLABS_API_KEY`. It incurs provider usage and overwrites their MP3s and manifest.
-The library's npm package includes only the built library, README, and license;
-the playground and audio examples live in the GitHub repository.
+CI tests Node 22 and 24. The npm payload contains the built library, README,
+and license. The playground and recorded examples live in the repository.
 
-See [PLAN.md](PLAN.md) for the release boundary. CI builds and tests on Node 22 and 24.
+`npm run samples` regenerates the three situation clips.
+`npm run samples -- --comparisons` regenerates the four same-sentence clips.
+Both use your server-side key, incur provider usage, and overwrite the respective
+files. Exact requests are in the [situation manifest](examples/audio/manifest.json)
+and [comparison manifest](examples/audio/comparisons-manifest.json).
 
 ## License
 
-Library and demo code: [MIT](LICENSE). See [audio attribution](examples/audio/README.md)
-for generated samples. This is an independent project, unaffiliated with ElevenLabs.
-The code license grants no ElevenLabs service access or voice rights;
-API usage remains subject to [ElevenLabs terms](https://elevenlabs.io/elevenapi-terms).
+Code: [MIT](LICENSE). Audio generated with [ElevenLabs](https://elevenlabs.io);
+see [sample attribution and usage notes](examples/audio/README.md).
+Independent project, unaffiliated with ElevenLabs. The software license
+grants no service access or voice rights; [API terms](https://elevenlabs.io/elevenapi-terms)
+still apply.

@@ -1,7 +1,9 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { generateAudio, buildRequest, DEFAULT_VOICE } from "../demo/provider.mjs";
 
-const situations = JSON.parse(await readFile(new URL("./situations.json", import.meta.url), "utf8"));
+const comparisonOnly = process.argv.includes("--comparisons");
+const inputFile = comparisonOnly ? "comparisons.json" : "situations.json";
+const situations = JSON.parse(await readFile(new URL(`./${inputFile}`, import.meta.url), "utf8"));
 const directory = new URL("./audio/", import.meta.url);
 await mkdir(directory, { recursive: true });
 const manifest = [];
@@ -12,4 +14,5 @@ for (const situation of situations) {
   manifest.push({ id: situation.id, file: `${situation.id}.mp3`, context: situation.context, ...buildRequest(input), generatedAt: new Date().toISOString(), provider: "ElevenLabs" });
   console.log(`Generated ${situation.id}: ${bytes.length} bytes`);
 }
-await writeFile(new URL("manifest.json", directory), JSON.stringify(manifest, null, 2) + "\n");
+const manifestFile = comparisonOnly ? "comparisons-manifest.json" : "manifest.json";
+await writeFile(new URL(manifestFile, directory), JSON.stringify(manifest, null, 2) + "\n");
