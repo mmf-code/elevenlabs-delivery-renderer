@@ -8,6 +8,7 @@ dist/
 docs/audio/
 docs/app.js
 docs/revision.mjs
+docs/speech-pipeline.mjs
 docs/renderer.js
 docs/context.js
 docs/context-examples.json

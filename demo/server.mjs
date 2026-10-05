@@ -1,7 +1,8 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { buildRequest, generateAudio } from "./provider.mjs";
-import { inferDelivery, DEFAULT_CONTEXT_MODEL } from "./context-provider.mjs";
+import { prepareSpeech } from "./speech-pipeline.mjs";
+import { modelConnection } from "./model.mjs";
 
 const port = Number(process.env.PORT ?? 4317);
 const origin = `http://127.0.0.1:${port}`;
@@ -9,6 +10,7 @@ const assets = new Map([
   ["/", ["demo/index.html", "text/html; charset=utf-8"]],
   ["/app.js", ["demo/app.js", "text/javascript; charset=utf-8"]],
   ["/revision.mjs", ["demo/revision.mjs", "text/javascript; charset=utf-8"]],
+  ["/speech-pipeline.mjs", ["demo/speech-pipeline.mjs", "text/javascript; charset=utf-8"]],
   ["/renderer.js", ["dist/index.js", "text/javascript; charset=utf-8"]],
   ["/context.js", ["dist/context.js", "text/javascript; charset=utf-8"]],
   ["/context-examples.json", ["examples/context-examples.json", "application/json"]],
@@ -28,9 +30,8 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method === "GET" && req.url === "/api/config") {
       res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({
-        contextConfigured: Boolean(process.env.GEMINI_API_KEY),
+        contextConfigured: modelConnection.configured,
         speechConfigured: Boolean(process.env.ELEVENLABS_API_KEY),
-        contextModel: process.env.CONTEXT_MODEL ?? DEFAULT_CONTEXT_MODEL,
       })); return;
     }
     if (req.method === "GET" && assets.has(req.url)) {
@@ -55,10 +56,7 @@ const server = createServer(async (req, res) => {
       if (contextBusy) { res.writeHead(429).end(JSON.stringify({ error: "A context request is already running." })); return; }
       contextBusy = true;
       try {
-        const result = await inferDelivery(input, {
-          apiKey: process.env.GEMINI_API_KEY,
-          model: process.env.CONTEXT_MODEL ?? DEFAULT_CONTEXT_MODEL,
-        });
+        const result = await prepareSpeech(input, { generate: modelConnection.generate });
         res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify(result));
       } finally { contextBusy = false; }
       return;

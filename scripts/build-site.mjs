@@ -7,6 +7,7 @@ const html = (await readFile(new URL("demo/index.html", root), "utf8")).replace(
 await writeFile(new URL("index.html", site), html);
 for (const [source, target] of [
   ["demo/app.js", "app.js"], ["demo/revision.mjs", "revision.mjs"],
+  ["demo/speech-pipeline.mjs", "speech-pipeline.mjs"],
   ["dist/index.js", "renderer.js"], ["dist/context.js", "context.js"],
   ["examples/context-examples.json", "context-examples.json"],
   ["examples/audio/context-manifest.json", "context-manifest.json"],
