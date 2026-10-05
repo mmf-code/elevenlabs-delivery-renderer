@@ -2,7 +2,8 @@
 
 The user supplies a situation and preceding conversation. One model generation
 returns the reply and vocal delivery together. The renderer creates the tagged
-speech transcript. No user-authored metadata or additional emotion-analysis
+speech transcript at the model's chosen segment boundaries. Tone and vocal
+reaction directions use open vocabulary. No user-authored metadata or additional emotion-analysis
 call is required. An optional fixed line is preserved exactly.
 
 The main demo shows the reply, tagged transcript, and audio. Model instructions,
@@ -17,3 +18,6 @@ and prove one model call per reply, validation, and stale-result rejection.
 This package includes no proprietary simulation prompts, character policies,
 state engine, scoring, automatic transition matching, custom voices, customer
 conversations, production telemetry, or private repository history.
+
+Document the relationship to EVRE as a reduced standalone edition. Avoid
+comparative quality claims without a controlled listening evaluation.

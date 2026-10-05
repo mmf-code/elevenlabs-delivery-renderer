@@ -6,6 +6,9 @@ The context-driven examples are in `context-manifest.json`: each records the
 full synthetic context, transcript, public instruction, generated reply and
 delivery, and resulting ElevenLabs request. Text and delivery in those examples
 were generated together by one real model call, not supplied as presets.
+These longer recordings contain four or five model-selected segments, with
+delivery changes at sentence and clause boundaries. The renderer preserves the
+concatenated words and places each direction at its corresponding boundary.
 The public example voice ID is `JBFqnCBsd6RMkjVDRZzb`;
 no custom or cloned voice assets are distributed.
 

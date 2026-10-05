@@ -14,7 +14,8 @@ test("rejects malformed tags without losing valid sibling fields", () => {
   for (const tone of ["warm] [shouts", "hello\nworld", "<voice>", "x".repeat(65), "a b c d e f g h i", "", "123"]) {
     assert.deepEqual(sanitizeCue({ tone, reaction: "sighs" }), { reaction: "sighs" });
   }
-  assert.deepEqual(sanitizeCue({ tone: "warm", reaction: "applause", secret: "ignored" }), { tone: "warm" });
+  assert.deepEqual(sanitizeCue({ tone: "warm", reaction: "bad] [tag", secret: "ignored" }), { tone: "warm" });
+  assert.deepEqual(sanitizeCue({ tone: "barely containing irritation", reaction: "clears throat" }), { tone:"barely containing irritation", reaction:"clears throat" });
   for (const input of [null, undefined, [], "warm", 42]) assert.deepEqual(sanitizeCue(input), {});
   assert.deepEqual(sanitizeCue(Object.defineProperty({}, "tone", { get() { throw new Error("bad getter"); } })), {});
 });

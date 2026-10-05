@@ -24,3 +24,10 @@ test("provider errors do not forward provider response bodies", async () => {
   await assert.rejects(generateAudio({ text: "Hi" }), /Set ELEVENLABS_API_KEY/);
   await assert.rejects(generateAudio({ text: "Hi" }, { apiKey: "synthetic-test-key", request: async () => new Response("sensitive provider body", { status: 403 }) }), /HTTP 403/);
 });
+
+test("provider preserves interior delivery tags and rejects text-segment disagreement", () => {
+  const segments = [{text:"Let me check. ",cue:{tone:"uncertain"}},{text:"Yes, it is supported.",cue:{tone:"confident",reaction:"clears throat"}}];
+  const text = segments.map((s) => s.text).join("");
+  assert.equal(buildRequest({text,segments}).body.inputs[0].text,"[uncertain] Let me check. [confident] [clears throat] Yes, it is supported.");
+  assert.throws(() => buildRequest({text:"Different words",segments}),/do not match/);
+});

@@ -27,7 +27,7 @@ function hideAudio() {
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = undefined; }
 }
 function speechInput(result) {
-  return { text:result.speech.sourceText, cue:result.cue, voiceId:$("voice").value, model:$("model").value, previousText:$("previous").value };
+  return { text:result.speech.sourceText, segments:result.segments, cue:result.cue, voiceId:$("voice").value, model:$("model").value, previousText:$("previous").value };
 }
 function preview() {
   try { const prompt = buildTurnRequest(input()); $("prompt").textContent = prompt.instruction + "\n\nINPUT\n" + prompt.userText; }
@@ -35,7 +35,7 @@ function preview() {
   const result = gate.value();
   $("source").textContent = result?.speech.sourceText ?? "The generated reply appears here.";
   $("tagged").textContent = result?.speech.speechText ?? "The line with automatically assigned voice tags appears here.";
-  $("resolution").textContent = result ? JSON.stringify({ delivery:result.cue, provenance:result.provenance },null,2) : "Created automatically with the reply.";
+  $("resolution").textContent = result ? JSON.stringify({ segments:result.segments, provenance:result.provenance },null,2) : "Created automatically with the reply.";
   if (result) {
     const value = speechInput(result);
     const body = { inputs:[{ text:result.speech.speechText, voice_id:value.voiceId }], model_id:value.model };
