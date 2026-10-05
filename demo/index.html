@@ -1,57 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-backend="local">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ElevenLabs Delivery Renderer · Playground</title>
-  <style>
-    :root { color-scheme: light; font: 16px/1.55 system-ui, sans-serif; color: #192c32; background: #f4f3ed; }
-    body { max-width: 1080px; margin: 0 auto; padding: 40px 24px; }
-    h1 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.045em; line-height: 1.1; margin-bottom: 16px; }
-    h2 { font-size: 1.15rem; } .intro { max-width: 700px; color: #53666b; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
-    section { background: #fff; border: 1px solid #dbe0d9; border-radius: 16px; padding: 24px; }
-    label { display: block; margin: 18px 0 6px; font-weight: 600; }
-    input, textarea, select { box-sizing: border-box; width: 100%; padding: 11px; border: 1px solid #becbc6; border-radius: 8px; font: inherit; background: #fff; }
-    textarea { resize: vertical; } small { display: block; color: #53666b; }
-    button, .download { display: inline-block; background: #156456; color: white; border: 0; padding: 12px 18px; border-radius: 8px; font: inherit; cursor: pointer; margin-top: 18px; }
-    button:disabled { opacity: .6; cursor: wait; } .secondary { background: #e7eeea; color: #174237; }
-    pre { background: #f2f5f3; padding: 16px; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; }
-    audio { width: 100%; margin-top: 16px; } #status { min-height: 28px; } .sample { border-top: 1px solid #e1e7e2; padding-top: 14px; margin-top: 14px; }
-    [hidden] { display: none !important; } @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } body { padding: 24px 16px; } }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context → delivery → speech</title>
+<style>
+:root { font: 16px/1.55 system-ui,sans-serif; color:#192c32; background:#f4f3ed; color-scheme:light; }
+body { max-width:1200px; margin:auto; padding:36px 24px; } h1 { font-size:clamp(2rem,5vw,3.5rem); letter-spacing:-.045em; line-height:1.1; }
+.grid { display:grid; grid-template-columns:1fr 1.1fr; gap:24px; } section { background:white; border:1px solid #dbe0d9; border-radius:14px; padding:24px; }
+label { display:block; font-weight:600; margin:16px 0 6px; } input,textarea,select { box-sizing:border-box; width:100%; padding:10px; border:1px solid #becbc6; border-radius:7px; font:inherit; }
+textarea { resize:vertical; } small,.intro { color:#53666b; } small { display:block; } pre { background:#f2f5f3; padding:14px; border-radius:8px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:.8rem; }
+button,a.download { background:#156456; color:white; border:0; border-radius:7px; padding:11px 16px; margin-top:16px; font:inherit; cursor:pointer; display:inline-block; }
+button:disabled { opacity:.5; cursor:default; } audio { width:100%; } #status { min-height:28px; } input[type=checkbox] { width:auto; margin-right:8px; }
+h2 { font-size:1.2rem; } h3 { font-size:1rem; } .sample { border-top:1px solid #dde4df; padding:16px 0; } [hidden] { display:none!important; } a { color:#156456; }
+@media(max-width:800px) { .grid { grid-template-columns:1fr; } body { padding:24px 16px; } }
+</style>
 </head>
 <body>
-  <small>OPEN SOURCE · EXPLICIT DELIVERY CUES</small>
-  <h1>Give your words a delivery.</h1>
-  <p class="intro">Choose a situation, edit the text and voice direction, then preview the exact ElevenLabs request. Generate speech with your own server-side API key.</p>
-  <div class="grid">
-    <section>
-      <h2>Compose</h2>
-      <label for="situation">Example situation</label><select id="situation"></select>
-      <label for="context">Situation notes</label><textarea id="context" rows="3"></textarea>
-      <small>Local notes for choosing delivery. Editing these does not infer a tone or send the notes to ElevenLabs.</small>
-      <label for="text">Words to speak</label><textarea id="text" rows="4" maxlength="2000"></textarea>
-      <label for="tone">Voice direction</label><input id="tone" maxlength="64" placeholder="warm, friendly">
-      <label for="reaction">Vocal reaction</label><select id="reaction"><option value="">None</option><option>sighs</option><option>laughs</option><option>exhales</option></select>
-      <label for="previous">Previous spoken text (optional)</label><input id="previous" maxlength="100">
-      <small>Sent as previous_text for prosodic continuity. Use preceding dialogue, not an instruction prompt.</small>
-      <label for="voice">Voice ID</label><input id="voice" value="JBFqnCBsd6RMkjVDRZzb">
-      <label for="model">Model</label><select id="model"><option value="eleven_v4">Eleven v4</option><option value="eleven_v3">Eleven v3</option></select>
-      <button id="preview" class="secondary">Preview request</button>
-      <button id="generate">Generate audio</button>
-      <small>Generation sends the shown text to ElevenLabs and uses your account credits.</small>
-    </section>
-    <section>
-      <h2>Request and playback</h2>
-      <p id="status" role="status" aria-live="polite">Choose an example to begin.</p>
-      <h3>Source text</h3><pre id="source"></pre>
-      <h3>Speech request</h3><pre id="payload"></pre>
-      <audio id="player" controls hidden></audio>
-      <a id="download" class="download" download="delivery.mp3" hidden>Download audio</a>
-      <h3>Recorded examples</h3><div id="samples"></div>
-      <small>Examples use synthetic text. Voice delivery is model-dependent; tags express intent rather than guarantee a particular performance.</small>
-    </section>
-  </div>
-  <script type="module" src="/app.js"></script>
+<small>ELEVENLABS DELIVERY RENDERER · CONTEXT PLAYGROUND</small>
+<h1>How does a situation become [a tone]?</h1>
+<p class="intro">Edit the situation, transcript, or metadata. Inspect the exact inference prompt, the model-selected delivery, and the speech request. The words to speak stay yours.</p>
+<p id="mode" role="status"></p>
+<div class="grid">
+<section>
+<h2>1. Change the inputs</h2>
+<label for="situation">Start from an example</label><select id="situation"></select>
+<label for="context">Situation</label><textarea id="context" rows="3" maxlength="2000"></textarea>
+<label for="transcript">Preceding transcript</label><textarea id="transcript" rows="5" maxlength="4000"></textarea>
+<label for="metadata">Speaker metadata (JSON)</label><textarea id="metadata" rows="6"></textarea>
+<small>Add or change any JSON field: goals, relationship, urgency, speaking constraints, or your own attributes.</small>
+<label for="text">Words to speak</label><textarea id="text" rows="3" maxlength="2000"></textarea>
+<label><input type="checkbox" id="auto">Infer after edits (1.2-second debounce)</label>
+<small>Prompt preview updates immediately. Automatic inference sends edited inputs to Gemini and uses your account quota. New audio is generated only when requested.</small>
+<button id="infer">Infer delivery from this context</button>
+<button id="recorded">Load recorded result for this exact example</button>
+<label for="previous">Previous spoken text for ElevenLabs (optional)</label><input id="previous" maxlength="100">
+<label for="voice">Voice ID</label><input id="voice" value="JBFqnCBsd6RMkjVDRZzb">
+<label for="model">Speech model</label><select id="model"><option value="eleven_v4">Eleven v4</option><option value="eleven_v3">Eleven v3</option></select>
+<button id="generate" disabled>Generate audio from current result</button>
+<small>The full context goes to Gemini. ElevenLabs receives only the tagged line, voice/model, and optional previous spoken text. Use synthetic or consented data.</small>
+</section>
+<section>
+<h2>2. Watch the pipeline</h2>
+<p id="status" role="status" aria-live="polite"></p>
+<details open><summary>Exact public instruction and model input</summary><pre id="prompt"></pre></details>
+<h3>Model-selected metadata</h3><pre id="resolution">No current result. Infer delivery or load an explicitly recorded example.</pre>
+<h3>Source text (unchanged)</h3><pre id="source"></pre>
+<h3>ElevenLabs request</h3><pre id="payload">Waiting for current delivery metadata.</pre>
+<audio id="player" controls hidden></audio><a id="download" class="download" download="context-delivery.mp3" hidden>Download audio</a>
+<h3>3. Real context-driven recordings</h3><div id="samples"></div>
+<small>All three use the same spoken line. The cues below were selected by actual model calls from different contexts, then sent to Eleven v4. They are recordings, not live inference or fixed expected answers.</small>
+<p><a href="https://github.com/mmf-code/elevenlabs-delivery-renderer">Source, setup, and tests →</a></p>
+</section>
+</div>
+<script type="module" src="./app.js"></script>
 </body>
 </html>

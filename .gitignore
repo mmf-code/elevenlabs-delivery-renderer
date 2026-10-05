@@ -5,3 +5,10 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+docs/audio/
+docs/app.js
+docs/revision.mjs
+docs/renderer.js
+docs/context.js
+docs/context-examples.json
+docs/context-manifest.json

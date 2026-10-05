@@ -12,7 +12,9 @@
     "test": "npm run build && node --test test/*.test.mjs",
     "example": "npm run build && node examples/render.mjs",
     "demo": "npm run build && node demo/server.mjs",
+    "site": "npm run build && node scripts/build-site.mjs",
     "samples": "npm run build && node examples/generate-samples.mjs",
+    "samples:context": "npm run build && node examples/generate-context-samples.mjs",
     "prepack": "npm run build"
   },
   "devDependencies": { "typescript": "~5.9.3" },
